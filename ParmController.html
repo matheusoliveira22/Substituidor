@@ -4,38 +4,29 @@
     <meta charset="utf-8" />
     <title>Cookie Controller</title>
 </head>
-<body onload="init()">
+<body onload="javascript: init();">
     <div style="margin: auto;display: table;padding: 10px;">
         <input type="text" id="text" />
-        <button onclick="buttonFunction()">Habilitar/Desabilitar</button>
+        <button onclick="javascript: buttonFunction();">Adicionar</button>
     </div>
     <div style="margin: auto;display: table;">
         <h5 style="font-family: arial, sans-serif;">Parâmetros cadastrados:</h5>
     </div>
-    <div style="margin: auto;display: table;">
-        <table id="tableParms">
-            <thead>
-                <tr>
-                    <th>Parâmetro</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody id="tableParmsBody" />
-        </table>
+    <div id ="tableDiv"style="margin: auto;display: table;">
     </div>
 </body>
 </html>
 <script>
     function buttonFunction(parm) {
-        if(parm === null || parm === undefined)
+        if (parm === null || parm === undefined)
             toggleParm("[" + document.getElementById("text").value + "]");
         else
             toggleParm("[" + parm + "]");
-        loadParms()
+        loadParms();
     }
 
     function toggleParm(pname) {
-        let ParmValue = getCookie(pname);
+        var ParmValue = getCookie(pname);
         ParmValue = (ParmValue === "true") ? "false" : "true";
         setCookie(pname, ParmValue, 1);
     }
@@ -65,14 +56,16 @@
     }
 
     function loadParms() {
-        let newTableBody = document.createElement('tbody');
-        newTableBody.id = "tableParmsBody";
-        let tableBody = document.getElementById("tableParmsBody");
+        var tableDiv = document.getElementById("tableDiv");
 
         var name = "]=";
         var ca = document.cookie.split(';');
         var linha = 0;
         var funcao = [];
+        var innerHTML = "";
+
+        innerHTML += "<table><thead><tr><th>Parâmetro</th><th>Valor</th><th></th></tr></thead><tbody>";
+
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
             while (c.charAt(0) == ' ') {
@@ -83,22 +76,14 @@
 
                 var ParmName = c.substring(1, c.indexOf("]"));
                 var value = c.substring(ParmName.length + 3, c.length);
-                var row = newTableBody.insertRow();
-                var parametro = row.insertCell(0);
-                parametro.id = "parm" + linha;
-                var valor = row.insertCell(1);
-                /*var tbutton = row.insertCell(2);
-                var button = document.createElement('button');
-                button.innerHTML = (value === "true") ? "Desabilitar": "Habilitar";
-                funcao =  funcao.push(new Function("parm = " + ParmName, "buttonFunction(parm)"));
-                button.onclick = funcao;*/
-                parametro.innerHTML = ParmName;
-                valor.innerHTML = value;
-                //tbutton.appendChild(button);
+                innerHTML += "<tr><td>" + ParmName + "</td><td>" + value + "</td>";
+                innerHTML += "<td><button onclick='buttonFunction(\"" + ParmName + "\")'>" +
+                    ((value === "true") ? "Desabilitar" : "Habilitar") + "</button></td>"
             }
         }
 
-        tableBody.parentNode.replaceChild(newTableBody, tableBody);
+        innerHTML +="</tbody></table>"
+        tableDiv.innerHTML = innerHTML;
     }
 
     function init() {
